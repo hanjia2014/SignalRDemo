@@ -1,5 +1,4 @@
 ﻿using Owin;
-
 namespace MVCSignalRDemo
 {
     public class Startup
