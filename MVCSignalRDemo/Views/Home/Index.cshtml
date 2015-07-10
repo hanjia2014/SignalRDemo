@@ -1,0 +1,69 @@
+﻿@model IEnumerable<MVCSignalRDemo.Models.Student>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@section Scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            var refreshStudents = function () {
+                $.getJSON("/api/Students/", function (data) {
+
+                    var table = '<tr><td>Name</td><td>RollNo</td></tr>';
+
+                    // On success, 'data' contains a list of products.
+                    $.each(data, function (key, val) {
+                        table += '<tr><td>' + val.Name + '</td><td>' + val.RollNo + '</td></tr>';
+                    });
+                    console.log(data);
+                    $("#targetTable").html(table);
+                });
+            };
+
+            //Proxy created on the fly
+            var hub = $.connection.studentChange;
+
+            //Declare a function on the chat hub so the server invoke it
+            hub.client.Poke = function (message) {
+                refreshStudents();
+            };
+
+            $.connection.hub.start({ transport: 'auto' }, function () {
+
+            });
+        });
+    </script>
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table" id="targetTable">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RollNo)
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RollNo)
+        </td>
+    </tr>
+}
+
+</table>
